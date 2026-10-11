@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <!-- Program.Main chooses between the editor and the headless preflight cache worker. -->
+    <DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+    <TargetFramework>net10.0-windows10.0.22621.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <!-- Releases (scripts/release.ps1) carry .NET too: testers install nothing. Set here, not on the
+         command line, so the referenced libraries keep their RID-less restore. -->
+    <SelfContained Condition="'$(NcweReleaseVersion)' != ''">true</SelfContained>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- NCWE's square logo: the exe's icon in Explorer, shortcuts and the taskbar (Brand.SetIcon gives it to the windows). -->
+    <ApplicationIcon>Assets\ncwe.ico</ApplicationIcon>
+    <AssemblyName>NCWE.Studio</AssemblyName>
+    <RootNamespace>NCWE.Studio</RootNamespace>
+    <!-- WolvenKit decoding is allocation-bound; server GC lets streaming workers scale (measured 8x on 48 sectors). -->
+    <ServerGarbageCollection>true</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>true</ConcurrentGarbageCollection>
+    <RetainVMGarbageCollection>true</RetainVMGarbageCollection>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="../../artifacts/native/$(Configuration)/ncwe-gizmo.dll" Link="ncwe-gizmo.dll" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Open//77 brand (open2077.net/brand): title bar, welcome card, splash screen. -->
+    <Content Include="Assets\**" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Interface translations, keyed by the English text (Localization/Loc.cs). -->
+    <EmbeddedResource Include="Localization\*.json" />
+    <!-- Help ▸ Credits and licenses (Credits/CreditsCatalog.cs): NCWE's license, the packages this build
+         resolves, their inventory and license texts (scripts/update-notices.ps1 keeps docs/ current). -->
+    <EmbeddedResource Include="../../LICENSE" LogicalName="Credits/LICENSE.txt" />
+    <EmbeddedResource Include="packages.lock.json" LogicalName="Credits/packages.lock.json" />
+    <EmbeddedResource Include="../../docs/dependencies.json" LogicalName="Credits/dependencies.json" />
+    <EmbeddedResource Include="../../docs/licenses/*.txt" LogicalName="Credits/licenses/%(Filename)%(Extension)" />
+    <ProjectReference Include="../NCWE.Core/NCWE.Core.csproj" />
+    <ProjectReference Include="../NCWE.Formats/NCWE.Formats.csproj" />
+    <ProjectReference Include="../NCWE.Export/NCWE.Export.csproj" />
+    <ProjectReference Include="../NCWE.Render/NCWE.Render.csproj" />
+    <!-- Cloud saves and real-time collaboration (the service: workers/collab, collab.open77.dev). -->
+    <ProjectReference Include="../NCWE.Collab.Client/NCWE.Collab.Client.csproj" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.5.1" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2705" />
+    <PackageReference Include="System.Drawing.Common" Version="10.0.12" />
+  </ItemGroup>
+  <!-- An unpackaged publish leaves out the compiled XAML (.xbf) and the app's resource index (.pri)
+       that the build copies next to the program: without them no window loads. -->
+  <Target Name="NcwePublishCompiledXaml" AfterTargets="ComputeResolvedFilesToPublishList">
+    <ItemGroup>
+      <_NcweCompiledXaml Include="$(OutDir)**\*.xbf;$(OutDir)$(TargetName).pri" Exclude="@(ResolvedFileToPublish)" />
+      <ResolvedFileToPublish Include="@(_NcweCompiledXaml)" RelativePath="%(_NcweCompiledXaml.RecursiveDir)%(_NcweCompiledXaml.Filename)%(_NcweCompiledXaml.Extension)" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
+</Project>

@@ -1,0 +1,19 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <!-- The SDK excludes only the current BaseOutputPath from default items: alternate outputs
+         (bin-release, bin-fix, bin-netperf...) would pull each other's files in. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);bin/**;bin-*/**</DefaultItemExcludes>
+  </PropertyGroup>
+  <!-- Release builds (-p:NcweReleaseVersion=<version>): the version Studio shows (Brand.ReleaseVersion). -->
+  <ItemGroup Condition="'$(NcweReleaseVersion)' != ''">
+    <AssemblyMetadata Include="NcweReleaseVersion" Value="$(NcweReleaseVersion)" />
+  </ItemGroup>
+</Project>

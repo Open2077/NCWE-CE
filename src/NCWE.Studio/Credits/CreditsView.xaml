@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<!-- Help ▸ Credits and licenses and Help ▸ About NCWE: who NCWE thanks, its own license and every
+     third-party component with its license text (CreditsCatalog). Shown in a large ContentDialog. -->
+<UserControl
+    x:Class="NCWE.Studio.Credits.CreditsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <Style x:Key="NavButtonStyle" TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleButtonStyle}">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="12,9" />
+        </Style>
+        <Style x:Key="PageTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style x:Key="LeadStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="LineHeight" Value="20" />
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        <Style x:Key="PanelStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource HairlineBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="18,16" />
+        </Style>
+        <Style x:Key="LicenseTextStyle" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
+            <Setter Property="FontSize" Value="11.5" />
+            <Setter Property="LineHeight" Value="17" />
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="IsTextSelectionEnabled" Value="True" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource ShellBackgroundBrush}" BorderBrush="{StaticResource HairlineBrush}" BorderThickness="1" CornerRadius="6">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Navigation -->
+        <Grid Background="{StaticResource SidebarBackgroundBrush}" BorderBrush="{StaticResource HairlineBrush}" BorderThickness="0,0,1,0" Padding="10,18,10,16" CornerRadius="6,0,0,6">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <StackPanel Margin="12,0,0,18" Spacing="2">
+                <TextBlock Text="NCWE STUDIO" FontSize="15" FontWeight="SemiBold" CharacterSpacing="120" />
+                <TextBlock x:Name="NavBuild" FontSize="11.5" Foreground="{StaticResource TextTertiaryBrush}" />
+            </StackPanel>
+            <StackPanel Grid.Row="1" Spacing="2">
+                <ToggleButton x:Name="NavAbout" Style="{StaticResource NavButtonStyle}" Tag="about" Click="OnNav">
+                    <StackPanel Orientation="Horizontal" Spacing="10"><FontIcon Glyph="&#xE946;" FontSize="15" /><TextBlock Text="About" /></StackPanel>
+                </ToggleButton>
+                <ToggleButton x:Name="NavThanks" Style="{StaticResource NavButtonStyle}" Tag="thanks" Click="OnNav">
+                    <StackPanel Orientation="Horizontal" Spacing="10"><FontIcon Glyph="&#xEB51;" FontSize="15" /><TextBlock Text="Thanks" /></StackPanel>
+                </ToggleButton>
+                <ToggleButton x:Name="NavLicense" Style="{StaticResource NavButtonStyle}" Tag="license" Click="OnNav">
+                    <StackPanel Orientation="Horizontal" Spacing="10"><FontIcon Glyph="&#xE8A5;" FontSize="15" /><TextBlock Text="NCWE license" /></StackPanel>
+                </ToggleButton>
+                <ToggleButton x:Name="NavLibraries" Style="{StaticResource NavButtonStyle}" Tag="libraries" Click="OnNav">
+                    <Grid ColumnSpacing="10">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <FontIcon Glyph="&#xE8F1;" FontSize="15" />
+                        <TextBlock Grid.Column="1" Text="Third-party licenses" TextWrapping="Wrap" />
+                        <TextBlock x:Name="NavLibrariesCount" Grid.Column="2" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" VerticalAlignment="Center" />
+                    </Grid>
+                </ToggleButton>
+            </StackPanel>
+            <StackPanel Grid.Row="3" Spacing="8" Margin="12,0,6,0">
+                <TextBlock Text="MADE BY THE TEAM" FontSize="10" FontWeight="SemiBold" CharacterSpacing="140" Foreground="{StaticResource TextTertiaryBrush}" />
+                <HyperlinkButton Padding="0" Click="OnOpen77" ToolTipService.ToolTip="open2077.net">
+                    <Image Source="ms-appx:///Assets/open77-logo-dark.png" Height="18" Stretch="Uniform" HorizontalAlignment="Left" />
+                </HyperlinkButton>
+            </StackPanel>
+        </Grid>
+
+        <!-- Pages -->
+        <Grid Grid.Column="1">
+            <!-- About -->
+            <ScrollViewer x:Name="AboutPage" Padding="30,26,30,24">
+                <StackPanel Spacing="18" MaxWidth="680" HorizontalAlignment="Left">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="NCWE Studio" FontSize="28" FontWeight="SemiBold" />
+                        <TextBlock Text="Night City World Editor" FontSize="15" Foreground="{StaticResource TextSecondaryBrush}" />
+                        <TextBlock x:Name="AboutBuild" FontSize="12" Foreground="{StaticResource TextTertiaryBrush}" Margin="0,2,0,0" />
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource LeadStyle}"
+                               Text="A world editor for Cyberpunk 2077: move or delete the game's own objects, add meshes, lights, sounds, doors, roads and traffic, then export an ArchiveXL mod or an Open77 world." />
+                    <Border Style="{StaticResource PanelStyle}">
+                        <Grid ColumnSpacing="18">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Image Source="ms-appx:///Assets/open77-logo-dark.png" Height="24" Stretch="Uniform" VerticalAlignment="Top" Margin="0,3,0,0" />
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <TextBlock Text="MADE BY THE TEAM" Style="{StaticResource SectionHeaderStyle}" Margin="0" />
+                                <TextBlock Text="Open//77 is the multiplayer platform for Cyberpunk 2077." TextWrapping="Wrap" />
+                                <TextBlock Text="The worlds you export for Open77 can be played together on its servers." Style="{StaticResource CaptionStyle}" />
+                                <HyperlinkButton Click="OnOpen77" Padding="0" Margin="0,2,0,0">
+                                    <StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="open2077.net" /><FontIcon Glyph="&#xE8A7;" FontSize="11" /></StackPanel>
+                                </HyperlinkButton>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <Border Style="{StaticResource PanelStyle}">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="Powered by" Style="{StaticResource SectionHeaderStyle}" Margin="0" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Tag="thanks" Click="OnNav" Padding="12,6">
+                                    <StackPanel Orientation="Horizontal" Spacing="8"><FontIcon Glyph="&#xE90F;" FontSize="13" Foreground="{StaticResource AccentBrush}" /><TextBlock Text="WolvenKit" FontWeight="SemiBold" /></StackPanel>
+                                </Button>
+                                <Button Tag="thanks" Click="OnNav" Padding="12,6">
+                                    <StackPanel Orientation="Horizontal" Spacing="8"><FontIcon Glyph="&#xE7B8;" FontSize="13" Foreground="{StaticResource AccentBrush}" /><TextBlock Text="ArchiveXL" FontWeight="SemiBold" /></StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <TextBlock Text="Without them, NCWE would not have been possible. Thank you to their authors." Style="{StaticResource CaptionStyle}" />
+                            <HyperlinkButton Tag="thanks" Click="OnNav" Padding="0">
+                                <StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="See every project NCWE thanks" /><FontIcon Glyph="&#xE76C;" FontSize="10" /></StackPanel>
+                            </HyperlinkButton>
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource PanelStyle}">
+                        <Grid ColumnSpacing="14">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <FontIcon Glyph="&#xE8A5;" FontSize="18" Foreground="{StaticResource AccentBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                            <StackPanel Grid.Column="1" Spacing="6">
+                                <TextBlock Text="Free software" FontWeight="SemiBold" />
+                                <TextBlock Text="NCWE is licensed under the GNU General Public License v3.0 only. The libraries it ships with keep their own licenses." Style="{StaticResource CaptionStyle}" />
+                                <StackPanel Orientation="Horizontal" Spacing="16">
+                                    <HyperlinkButton Tag="license" Click="OnNav" Padding="0" Content="NCWE license" />
+                                    <HyperlinkButton Tag="libraries" Click="OnNav" Padding="0" Content="Third-party licenses" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Independent community project, unaffiliated with CD PROJEKT RED. GPL-3.0-only. Game data is read from your installation and is never redistributed." Style="{StaticResource CaptionStyle}" />
+                        <TextBlock Text="Cyberpunk 2077 is a trademark of CD PROJEKT S.A." Style="{StaticResource CaptionStyle}" Foreground="{StaticResource TextTertiaryBrush}" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Thanks -->
+            <ScrollViewer x:Name="ThanksPage" Padding="30,26,30,24" Visibility="Collapsed">
+                <StackPanel Spacing="18">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Thanks" Style="{StaticResource PageTitleStyle}" />
+                        <TextBlock Style="{StaticResource LeadStyle}" Text="NCWE stands on the work of the Cyberpunk 2077 modding community. Thank you to the people behind these projects." />
+                    </StackPanel>
+                    <Grid x:Name="ThanksGrid" ColumnSpacing="12" RowSpacing="12">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                    </Grid>
+                    <TextBlock Style="{StaticResource CaptionStyle}" Text="Every library NCWE ships with is listed, with its license, under Third-party licenses." />
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- NCWE's license -->
+            <ScrollViewer x:Name="LicensePage" Padding="30,26,30,24" Visibility="Collapsed">
+                <StackPanel Spacing="18">
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="NCWE license" Style="{StaticResource PageTitleStyle}" />
+                        <TextBlock Style="{StaticResource LeadStyle}" Text="GNU General Public License, version 3 only (GPL-3.0-only). NCWE is free software: here is what that means for you." />
+                    </StackPanel>
+                    <Grid ColumnSpacing="12" RowSpacing="12">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                        <Border Style="{StaticResource PanelStyle}">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                <FontIcon Glyph="&#xE768;" FontSize="16" Foreground="{StaticResource AccentBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                                <StackPanel Grid.Column="1" Spacing="4">
+                                    <TextBlock Text="Use" FontWeight="SemiBold" />
+                                    <TextBlock Text="Run NCWE for any purpose." Style="{StaticResource CaptionStyle}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Column="1" Style="{StaticResource PanelStyle}">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                <FontIcon Glyph="&#xE943;" FontSize="16" Foreground="{StaticResource AccentBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                                <StackPanel Grid.Column="1" Spacing="4">
+                                    <TextBlock Text="Study and change" FontWeight="SemiBold" />
+                                    <TextBlock Text="You may study how NCWE works and change it." Style="{StaticResource CaptionStyle}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Row="1" Style="{StaticResource PanelStyle}">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                <FontIcon Glyph="&#xE72D;" FontSize="16" Foreground="{StaticResource AccentBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                                <StackPanel Grid.Column="1" Spacing="4">
+                                    <TextBlock Text="Share" FontWeight="SemiBold" />
+                                    <TextBlock Text="You may redistribute NCWE, changed or not, under this same license and with its source code." Style="{StaticResource CaptionStyle}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource PanelStyle}">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                <FontIcon Glyph="&#xE7BA;" FontSize="16" Foreground="{StaticResource AccentBrush}" VerticalAlignment="Top" Margin="0,2,0,0" />
+                                <StackPanel Grid.Column="1" Spacing="4">
+                                    <TextBlock Text="No warranty" FontWeight="SemiBold" />
+                                    <TextBlock Text="NCWE comes with no warranty, to the extent permitted by law (sections 15 and 16)." Style="{StaticResource CaptionStyle}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                    <TextBlock Style="{StaticResource CaptionStyle}" Foreground="{StaticResource TextTertiaryBrush}"
+                               Text="This summary is not the license: the full text below is what applies. Third-party components keep their own licenses." />
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <TextBlock Text="Full text" Style="{StaticResource SectionHeaderStyle}" VerticalAlignment="Center" Margin="0" />
+                        <HyperlinkButton Grid.Column="1" Click="OnGnu" Padding="6,2">
+                            <StackPanel Orientation="Horizontal" Spacing="6"><TextBlock Text="gnu.org" /><FontIcon Glyph="&#xE8A7;" FontSize="11" /></StackPanel>
+                        </HyperlinkButton>
+                        <Button x:Name="CopyLicenseButton" Grid.Column="2" Click="OnCopyNcweLicense" Padding="10,4">
+                            <StackPanel Orientation="Horizontal" Spacing="6"><FontIcon Glyph="&#xE8C8;" FontSize="12" /><TextBlock Text="Copy the text" /></StackPanel>
+                        </Button>
+                    </Grid>
+                    <Border Style="{StaticResource PanelStyle}">
+                        <TextBlock x:Name="NcweLicenseText" Style="{StaticResource LicenseTextStyle}" />
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Third-party licenses -->
+            <Grid x:Name="LibrariesPage" Padding="30,26,30,20" RowSpacing="14" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Third-party licenses" Style="{StaticResource PageTitleStyle}" />
+                    <TextBlock x:Name="LibrariesSummary" Style="{StaticResource LeadStyle}" />
+                </StackPanel>
+                <Grid Grid.Row="1" ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="280" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid RowSpacing="8">
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /></Grid.RowDefinitions>
+                        <TextBox x:Name="LibrarySearch" PlaceholderText="Filter by name or license…" TextChanged="OnLibrarySearch" />
+                        <Border Grid.Row="1" Background="{StaticResource CardBackgroundBrush}" BorderBrush="{StaticResource HairlineBrush}" BorderThickness="1" CornerRadius="6" Padding="0,4">
+                            <ListView x:Name="LibraryList" SelectionMode="Single" SelectionChanged="OnLibrarySelected" />
+                        </Border>
+                    </Grid>
+                    <ScrollViewer Grid.Column="1" Padding="0,0,8,0">
+                        <StackPanel x:Name="LibraryDetail" Spacing="12" />
+                    </ScrollViewer>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

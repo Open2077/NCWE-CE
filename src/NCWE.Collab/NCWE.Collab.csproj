@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The real-time collaboration contract shared by the NCWE collaboration server and its
+       clients (NCWE Studio later): REST payloads, the live WebSocket messages, and a reference
+       client. No ASP.NET or WolvenKit dependency. -->
+  <PropertyGroup>
+    <AssemblyName>NCWE.Collab</AssemblyName>
+    <RootNamespace>NCWE.Collab</RootNamespace>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+</Project>

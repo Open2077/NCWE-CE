@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<!-- Startup splash: NCWE Studio, made by the Open//77 team. -->
+<Window
+    x:Class="NCWE.Studio.SplashWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="NCWE Studio">
+
+    <Grid x:Name="Root" Background="#0F1013">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- The two slashes of the Open//77 mark, large and faint on the right. -->
+        <Canvas Grid.RowSpan="2" IsHitTestVisible="False">
+            <Polygon Points="470,0 530,0 380,360 320,360" Fill="#1422E4F2" />
+            <Polygon Points="560,0 620,0 470,360 410,360" Fill="#0D22E4F2" />
+        </Canvas>
+        <Rectangle Grid.RowSpan="2" Height="3" VerticalAlignment="Top" IsHitTestVisible="False">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                    <GradientStop Color="#FF22E4F2" Offset="0" />
+                    <GradientStop Color="#0022E4F2" Offset="1" />
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+
+        <StackPanel Margin="40,32,40,0" Spacing="2">
+            <Image x:Name="NcweLogo" Source="ms-appx:///Assets/ncwe-logo.png" Height="60" Stretch="Uniform" HorizontalAlignment="Left" Margin="-4,0,0,6" AutomationProperties.Name="NCWE Studio" />
+            <TextBlock Text="Night City World Editor" FontSize="15" Foreground="#9A9DA4" />
+
+            <TextBlock Text="MADE BY THE TEAM" FontSize="10" FontWeight="SemiBold" CharacterSpacing="160" Foreground="#6E727A" Margin="0,30,0,10" />
+            <Image x:Name="Logo" Source="ms-appx:///Assets/open77-logo-dark.png" Height="30" Stretch="Uniform" HorizontalAlignment="Left" />
+            <TextBlock Text="The multiplayer platform for Cyberpunk 2077" FontSize="13" Foreground="#C9CCD2" Margin="0,12,0,0" />
+            <HyperlinkButton x:Name="SiteLink" Content="open2077.net" Padding="0" Margin="0,2,0,0" FontSize="13" Foreground="#22E4F2" Click="OnSite" />
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="40,0,40,22" RowSpacing="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <ProgressBar x:Name="Progress" IsIndeterminate="True" Foreground="#22E4F2" Background="#1F2126" />
+            <Grid Grid.Row="1">
+                <TextBlock x:Name="StatusText" Text="Starting…" FontSize="11" Foreground="#9A9DA4" TextTrimming="CharacterEllipsis" Margin="0,0,120,0" />
+                <TextBlock x:Name="BuildText" FontSize="11" Foreground="#6E727A" HorizontalAlignment="Right" />
+            </Grid>
+            <TextBlock Grid.Row="2" FontSize="10" Foreground="#5A5E66" TextWrapping="Wrap"
+                       Text="Independent community project, unaffiliated with CD PROJEKT RED. Game data is read from your installation and never redistributed." />
+        </Grid>
+    </Grid>
+</Window>

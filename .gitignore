@@ -1,0 +1,27 @@
+**/bin/
+**/bin-*/
+**/obj/
+.vs/
+.local/
+artifacts/
+TestResults/
+*.user
+*.suo
+*.archive
+*.mesh
+*.xbm
+*.streamingsector
+*.streamingblock
+*.cr2w
+*.dll
+*.exe
+*.pdb
+*.png
+# NCWE's own logos (title bar, splash, home screen, icon).
+!src/NCWE.Studio/Assets/ncwe-*.png
+*.dds
+*.glb
+*.gltf
+*.ncwe.local.json
+imgui.ini
+!**/packages.lock.json

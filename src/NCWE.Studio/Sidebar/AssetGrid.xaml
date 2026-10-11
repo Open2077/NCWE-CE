@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<UserControl
+    x:Class="NCWE.Studio.AssetGrid"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NCWE.Studio">
+
+    <Grid>
+        <GridView x:Name="Cards" SelectionMode="Single" IsItemClickEnabled="False" CanDragItems="True" Padding="10,2,4,10"
+                  DragItemsStarting="OnDragStarting" SelectionChanged="OnSelectionChanged" DoubleTapped="OnDoubleTapped" RightTapped="OnRightTapped"
+                  ContainerContentChanging="OnContainerChanging" KeyDown="OnCardsKey">
+            <GridView.ItemContainerStyle>
+                <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
+                    <Setter Property="Margin" Value="0,0,6,6" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="CornerRadius" Value="3" />
+                </Style>
+            </GridView.ItemContainerStyle>
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="local:LibraryItem">
+                    <Grid Background="{StaticResource CardBackgroundBrush}" CornerRadius="3" ToolTipService.ToolTip="{x:Bind Resource.Path}"
+                          PointerEntered="OnCardEntered" PointerExited="OnCardExited">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="26" />
+                        </Grid.RowDefinitions>
+                        <Grid Background="{StaticResource ThumbBackgroundBrush}">
+                            <FontIcon Glyph="{x:Bind PlaceholderGlyph, Mode=OneWay}" FontSize="20" Foreground="{StaticResource TextTertiaryBrush}"
+                                      Visibility="{x:Bind PlaceholderVisibility, Mode=OneWay}" />
+                            <Image Source="{x:Bind Thumbnail, Mode=OneWay}" Stretch="UniformToFill" />
+                            <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4" Padding="4,0,4,1" CornerRadius="2"
+                                    Background="{x:Bind KindBrush}" Visibility="{x:Bind BadgeVisibility}">
+                                <TextBlock Text="{x:Bind KindLabel}" FontSize="8" FontWeight="SemiBold" CharacterSpacing="60" Foreground="White" />
+                            </Border>
+                        </Grid>
+                        <TextBlock Grid.Row="1" Text="{x:Bind Name}" FontSize="11" Margin="7,0,6,0" VerticalAlignment="Center"
+                                   TextTrimming="CharacterEllipsis" Foreground="{StaticResource TextPrimaryBrush}" />
+                    </Grid>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsWrapGrid Orientation="Horizontal" ItemWidth="118" ItemHeight="112" />
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
+        </GridView>
+        <!-- The hovered card turns in 3D: one live view laid over the card's thumbnail. It never
+             enters the cards (the grid recycles them): moving a swap chain panel in and out of
+             recycled containers ended the process inside the UI framework. -->
+        <Canvas x:Name="HoverLayer" IsHitTestVisible="False" SizeChanged="OnHoverLayerSize">
+            <SwapChainPanel x:Name="HoverPanel" Width="1" Height="1" Opacity="0" IsHitTestVisible="False" />
+        </Canvas>
+        <StackPanel x:Name="EmptyState" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="6" Padding="24" Visibility="Collapsed" MaxWidth="300">
+            <FontIcon x:Name="EmptyGlyph" Glyph="&#xE721;" FontSize="26" Foreground="{StaticResource TextTertiaryBrush}" />
+            <TextBlock x:Name="EmptyText" Style="{StaticResource CaptionStyle}" TextAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../NCWE.Core/NCWE.Core.csproj" />
+    <PackageReference Include="WolvenKit.Modkit" Version="9.0.1" ExcludeAssets="contentFiles" />
+    <!-- Custom mesh import: Assimp reads FBX, OBJ, DAE, glTF...; ImageSharp decodes textures;
+         BCnEncoder compresses them into game textures (managed, no native tools). -->
+    <PackageReference Include="AssimpNet" Version="5.0.0-beta1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
+    <PackageReference Include="BCnEncoder.Net" Version="2.2.1" />
+    <!-- Custom sounds: NAudio reads and re-encodes audio through Windows Media Foundation, NVorbis
+         (NAudio.Vorbis) decodes Ogg Vorbis. -->
+    <PackageReference Include="NAudio.Core" Version="2.2.1" />
+    <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+    <PackageReference Include="NAudio.Vorbis" Version="1.5.0" />
+    <!-- The game's own sounds: its effects are Opus streams (Concentus: libopus in managed code);
+         its streamed media are Wwise Vorbis, which WolvenKit.Core's native wwtools turns into
+         standard Ogg Vorbis (the package's content files are not copied otherwise). -->
+    <PackageReference Include="Concentus" Version="2.2.2" />
+    <Content Include="$(NuGetPackageRoot)wolvenkit.core/9.0.1/content/wwtools.dll" Link="wwtools.dll" CopyToOutputDirectory="PreserveNewest" Visible="false" />
+  </ItemGroup>
+</Project>

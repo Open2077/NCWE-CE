@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../NCWE.Core/NCWE.Core.csproj" />
+    <ProjectReference Include="../NCWE.Formats/NCWE.Formats.csproj" />
+  </ItemGroup>
+</Project>

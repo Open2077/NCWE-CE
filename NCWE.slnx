@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/NCWE.Collab/NCWE.Collab.csproj" />
+    <Project Path="src/NCWE.Collab.Client/NCWE.Collab.Client.csproj" />
+    <Project Path="src/NCWE.Core/NCWE.Core.csproj" />
+    <Project Path="src/NCWE.Formats/NCWE.Formats.csproj" />
+    <Project Path="src/NCWE.Mcp/NCWE.Mcp.csproj" />
+    <Project Path="src/NCWE.Render/NCWE.Render.csproj" />
+    <Project Path="src/NCWE.Editor/NCWE.Editor.csproj" />
+    <Project Path="src/NCWE.Studio/NCWE.Studio.csproj" />
+    <Project Path="src/NCWE.Export/NCWE.Export.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="../../artifacts/native/$(Configuration)/ncwe-gizmo.dll" Link="ncwe-gizmo.dll" CopyToOutputDirectory="PreserveNewest" />
+    <ProjectReference Include="../NCWE.Core/NCWE.Core.csproj" />
+    <ProjectReference Include="../NCWE.Formats/NCWE.Formats.csproj" />
+    <ProjectReference Include="../NCWE.Export/NCWE.Export.csproj" />
+    <ProjectReference Include="../NCWE.Render/NCWE.Render.csproj" />
+  </ItemGroup>
+</Project>

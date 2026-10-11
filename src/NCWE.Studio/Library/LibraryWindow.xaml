@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-only -->
+<Window
+    x:Class="NCWE.Studio.LibraryWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NCWE.Studio"
+    Title="Library — NCWE Studio">
+
+    <Grid x:Name="Root" Background="{StaticResource ShellBackgroundBrush}">
+        <Grid.Resources>
+            <SolidColorBrush x:Key="ThumbBackgroundBrush" Color="#0C1016" />
+            <Style x:Key="NavListStyle" TargetType="ListView">
+                <Setter Property="SelectionMode" Value="Single" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="ScrollViewer.VerticalScrollMode" Value="Disabled" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+            </Style>
+            <Style x:Key="SegmentStyle" TargetType="ToggleButton" BasedOn="{StaticResource BarToggleStyle}">
+                <Setter Property="Height" Value="30" />
+                <Setter Property="Padding" Value="12,0" />
+            </Style>
+            <Style x:Key="ActionButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                <Setter Property="CornerRadius" Value="0" />
+                <Setter Property="Padding" Value="10,7" />
+            </Style>
+            <DataTemplate x:Key="NavTemplate" x:DataType="local:LibraryNavItem">
+                <Grid ColumnSpacing="10" Background="Transparent" Height="30" AllowDrop="{x:Bind CanDrop}" DragOver="OnNavDragOver" Drop="OnNavDrop" Tag="{x:Bind}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="18" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <FontIcon Glyph="{x:Bind Glyph}" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" />
+                    <TextBlock Grid.Column="1" Text="{x:Bind Title}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" FontSize="13" />
+                    <TextBlock Grid.Column="2" Text="{x:Bind CountText, Mode=OneWay}" Foreground="{StaticResource TextTertiaryBrush}" FontSize="11" VerticalAlignment="Center" />
+                </Grid>
+            </DataTemplate>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="34" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="26" />
+        </Grid.RowDefinitions>
+
+        <!-- Title bar -->
+        <Grid Background="{StaticResource HeaderBackgroundBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition x:Name="CaptionColumn" Width="140" />
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Spacing="8" Margin="12,0,0,0" VerticalAlignment="Center">
+                <FontIcon Glyph="&#xE8F1;" FontSize="14" Foreground="{StaticResource AccentBrush}" />
+                <TextBlock Text="Library" FontWeight="SemiBold" FontSize="13" />
+                <TextBlock Text="props and entities of the game" FontSize="12" Foreground="{StaticResource TextTertiaryBrush}" />
+            </StackPanel>
+            <Grid x:Name="DragRegion" Grid.Column="1" Background="Transparent" />
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="232" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="360" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Navigation: everything, recent, favorite folders, categories -->
+            <Border Background="{StaticResource SidebarBackgroundBrush}" BorderBrush="{StaticResource HairlineBrush}" BorderThickness="0,0,1,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,10,0,10">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="BROWSE" Style="{StaticResource SectionHeaderStyle}" Margin="16,4,0,4" CharacterSpacing="80" />
+                        <ListView x:Name="BrowseList" Style="{StaticResource NavListStyle}" ItemTemplate="{StaticResource NavTemplate}" SelectionChanged="OnNavSelected" />
+                        <Grid Margin="16,14,8,4">
+                            <TextBlock Text="FAVORITES" Style="{StaticResource SectionHeaderStyle}" Margin="0" VerticalAlignment="Center" CharacterSpacing="80" />
+                            <Button x:Name="NewFolderButton" Style="{StaticResource IconButtonStyle}" Width="24" Height="24" FontSize="11" Content="&#xE710;" HorizontalAlignment="Right" ToolTipService.ToolTip="New favorite folder">
+                                <Button.Flyout>
+                                    <Flyout x:Name="NewFolderFlyout" Placement="RightEdgeAlignedTop" Opened="OnNewFolderOpened">
+                                        <StackPanel Width="240" Spacing="8">
+                                            <TextBlock Text="New folder" FontWeight="SemiBold" />
+                                            <TextBox x:Name="NewFolderName" PlaceholderText="Bar props, Neon signs, Alley clutter…" KeyDown="OnNewFolderKey" />
+                                            <Button Content="Create" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Right" Click="OnCreateFolder" />
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </Grid>
+                        <ListView x:Name="FolderList" Style="{StaticResource NavListStyle}" ItemTemplate="{StaticResource NavTemplate}" SelectionChanged="OnNavSelected" RightTapped="OnFolderRightTapped" />
+                        <TextBlock Text="CATEGORIES" Style="{StaticResource SectionHeaderStyle}" Margin="16,14,0,4" CharacterSpacing="80" />
+                        <ListView x:Name="CategoryList" Style="{StaticResource NavListStyle}" ItemTemplate="{StaticResource NavTemplate}" SelectionChanged="OnNavSelected" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <!-- Results -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid Padding="16,12,16,8" ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="SearchBox" Height="34" FontSize="14" VerticalContentAlignment="Center" PlaceholderText="Search props and entities: chair, neon sign, vending machine, door…" TextChanged="OnSearchChanged" KeyDown="OnSearchKey" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" BorderBrush="{StaticResource StrongHairlineBrush}" BorderThickness="1">
+                        <ToggleButton x:Name="KindAll" Style="{StaticResource SegmentStyle}" Content="All" IsChecked="True" Click="OnKindFilter" Tag="All" />
+                        <ToggleButton x:Name="KindProps" Style="{StaticResource SegmentStyle}" Content="Props" Click="OnKindFilter" Tag="Props" ToolTipService.ToolTip="Meshes (.mesh): placed as world mesh nodes" />
+                        <ToggleButton x:Name="KindEntities" Style="{StaticResource SegmentStyle}" Content="Entities" Click="OnKindFilter" Tag="Entities" ToolTipService.ToolTip="Entity templates (.ent): doors, devices, vehicles, characters…" />
+                    </StackPanel>
+                    <ComboBox x:Name="SortBox" Grid.Column="2" Height="32" MinWidth="128" SelectedIndex="0" SelectionChanged="OnSortChanged" ToolTipService.ToolTip="Sort">
+                        <ComboBoxItem Content="Best match" />
+                        <ComboBoxItem Content="Name" />
+                        <ComboBoxItem Content="Folder" />
+                    </ComboBox>
+                </Grid>
+                <Grid Grid.Row="1" Padding="16,2,16,8" ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="ScopeTitle" Text="Everything" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <Button x:Name="FolderChip" Grid.Column="1" Visibility="Collapsed" Click="OnClearFolderFilter" Padding="8,3" CornerRadius="0" FontSize="12" ToolTipService.ToolTip="Stop showing only this folder">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <FontIcon Glyph="&#xE8B7;" FontSize="12" />
+                            <TextBlock x:Name="FolderChipText" MaxWidth="360" TextTrimming="CharacterEllipsis" />
+                            <FontIcon Glyph="&#xE711;" FontSize="10" />
+                        </StackPanel>
+                    </Button>
+                    <TextBlock x:Name="ResultCount" Grid.Column="2" Style="{StaticResource CaptionStyle}" VerticalAlignment="Center" TextWrapping="NoWrap" />
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="2">
+                        <ToggleButton x:Name="SmallCards" Style="{StaticResource ToolButtonStyle}" Content="&#xE80A;" FontSize="13" Click="OnCardSize" Tag="Small" ToolTipService.ToolTip="Small cards" />
+                        <ToggleButton x:Name="LargeCards" Style="{StaticResource ToolButtonStyle}" Content="&#xE8A9;" FontSize="13" Click="OnCardSize" Tag="Large" IsChecked="True" ToolTipService.ToolTip="Large cards" />
+                    </StackPanel>
+                </Grid>
+                <GridView x:Name="Cards" Grid.Row="2" Padding="16,0,8,16" SelectionMode="Extended" IsItemClickEnabled="False"
+                          CanDragItems="True" DragItemsStarting="OnCardsDragStarting" SelectionChanged="OnCardSelected" DoubleTapped="OnCardDoubleTapped"
+                          RightTapped="OnCardRightTapped" ContainerContentChanging="OnCardContainerChanging" KeyDown="OnCardsKey">
+                    <GridView.ItemContainerStyle>
+                        <Style TargetType="GridViewItem" BasedOn="{StaticResource DefaultGridViewItemStyle}">
+                            <Setter Property="Margin" Value="0,0,10,10" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="CornerRadius" Value="0" />
+                        </Style>
+                    </GridView.ItemContainerStyle>
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="local:LibraryItem">
+                            <Grid Background="{StaticResource CardBackgroundBrush}" ToolTipService.ToolTip="{x:Bind Resource.Path}" PointerEntered="OnCardPointerEntered" PointerExited="OnCardPointerExited">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="46" />
+                                </Grid.RowDefinitions>
+                                <Grid Background="{StaticResource ThumbBackgroundBrush}">
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="4" Visibility="{x:Bind PlaceholderVisibility, Mode=OneWay}">
+                                        <FontIcon Glyph="{x:Bind PlaceholderGlyph, Mode=OneWay}" FontSize="26" Foreground="{StaticResource TextTertiaryBrush}" />
+                                        <TextBlock Text="{x:Bind PlaceholderText, Mode=OneWay}" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" HorizontalAlignment="Center" />
+                                    </StackPanel>
+                                    <Image Source="{x:Bind Thumbnail, Mode=OneWay}" Stretch="UniformToFill" />
+                                    <Border HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6" Padding="5,1,5,2" Background="{x:Bind KindBrush}">
+                                        <TextBlock Text="{x:Bind KindLabel}" FontSize="9" FontWeight="SemiBold" CharacterSpacing="80" Foreground="White" />
+                                    </Border>
+                                    <Button Style="{StaticResource IconButtonStyle}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="2" FontSize="15"
+                                            Content="{x:Bind StarGlyph, Mode=OneWay}" Foreground="{x:Bind StarBrush, Mode=OneWay}" Click="OnCardStar" Tag="{x:Bind}" ToolTipService.ToolTip="Favorite (F)" />
+                                </Grid>
+                                <StackPanel Grid.Row="1" Padding="9,6,9,6" Spacing="1">
+                                    <TextBlock Text="{x:Bind Name}" FontSize="12" TextTrimming="CharacterEllipsis" Foreground="{StaticResource TextPrimaryBrush}" />
+                                    <TextBlock Text="{x:Bind CategoryLabel}" FontSize="11" TextTrimming="CharacterEllipsis" Foreground="{StaticResource TextTertiaryBrush}" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid Orientation="Horizontal" ItemWidth="194" ItemHeight="200" />
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                </GridView>
+                <!-- The hovered card turns in 3D: one live view laid over the card's thumbnail, under
+                     its badge and star. It never enters the cards (the grid recycles them). -->
+                <Canvas x:Name="HoverLayer" Grid.Row="2" IsHitTestVisible="False" SizeChanged="OnHoverLayerSize">
+                    <SwapChainPanel x:Name="HoverPanel" Width="1" Height="1" Opacity="0" IsHitTestVisible="False" />
+                </Canvas>
+                <StackPanel x:Name="EmptyState" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8" Visibility="Collapsed" MaxWidth="420">
+                    <FontIcon x:Name="EmptyGlyph" Glyph="&#xE721;" FontSize="34" Foreground="{StaticResource TextTertiaryBrush}" />
+                    <TextBlock x:Name="EmptyTitle" Text="Nothing found" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <TextBlock x:Name="EmptyText" Style="{StaticResource CaptionStyle}" TextAlignment="Center" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Details: live 3D preview and actions -->
+            <Border Grid.Column="2" Background="{StaticResource SidebarBackgroundBrush}" BorderBrush="{StaticResource HairlineBrush}" BorderThickness="1,0,0,0">
+                <Grid>
+                    <ScrollViewer x:Name="DetailsPanel" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                        <StackPanel Spacing="12" Padding="0,0,0,16">
+                            <Grid Height="300" Background="{StaticResource ThumbBackgroundBrush}">
+                                <SwapChainPanel x:Name="PreviewPanel" />
+                                <TextBlock x:Name="PreviewHint" Style="{StaticResource CaptionStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="6" Spacing="2">
+                                    <ToggleButton x:Name="SpinButton" Style="{StaticResource ToolButtonStyle}" Width="28" Height="28" FontSize="13" Content="&#xE7AD;" IsChecked="True" Click="OnSpin" ToolTipService.ToolTip="Turn by itself" />
+                                    <Button Style="{StaticResource IconButtonStyle}" Content="&#xE72C;" Click="OnResetPreview" ToolTipService.ToolTip="Reset the view" />
+                                </StackPanel>
+                                <TextBlock Text="Drag to turn · wheel to zoom" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" Margin="10,0,0,8" VerticalAlignment="Bottom" IsHitTestVisible="False" />
+                            </Grid>
+                            <StackPanel Padding="16,0" Spacing="6">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Border x:Name="DetailKindBadge" Padding="6,1,6,2" VerticalAlignment="Center">
+                                        <TextBlock x:Name="DetailKind" FontSize="10" FontWeight="SemiBold" CharacterSpacing="80" Foreground="White" />
+                                    </Border>
+                                    <TextBlock x:Name="DetailCategory" Style="{StaticResource CaptionStyle}" VerticalAlignment="Center" />
+                                </StackPanel>
+                                <TextBlock x:Name="DetailName" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
+                                <TextBlock x:Name="DetailInfo" Style="{StaticResource CaptionStyle}" />
+                                <Grid ColumnSpacing="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="DetailPath" IsReadOnly="True" FontFamily="{StaticResource MonoFont}" FontSize="11" TextWrapping="Wrap" />
+                                    <Button Grid.Column="1" Style="{StaticResource IconButtonStyle}" Width="32" Height="32" Content="&#xE8C8;" Click="OnCopyPath" VerticalAlignment="Top" ToolTipService.ToolTip="Copy the path" />
+                                </Grid>
+                            </StackPanel>
+                            <StackPanel x:Name="AppearancePanel" Padding="16,0" Spacing="4" Visibility="Collapsed">
+                                <TextBlock Text="Appearance" Style="{StaticResource SectionHeaderStyle}" Margin="0" />
+                                <ComboBox x:Name="AppearanceBox" HorizontalAlignment="Stretch" SelectionChanged="OnAppearanceChanged" />
+                            </StackPanel>
+                            <StackPanel Padding="16,0" Spacing="6">
+                                <Button x:Name="PlaceButton" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Padding="10,8" CornerRadius="0" Click="OnPlace">
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <FontIcon Glyph="&#xE710;" FontSize="14" />
+                                        <TextBlock Text="Place in the world" />
+                                        <TextBlock Text="click where it goes" Opacity=".7" FontSize="12" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                                <Button x:Name="PlaceFrontButton" Style="{StaticResource ActionButtonStyle}" Click="OnPlaceInFront">
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <FontIcon Glyph="&#xE7B5;" FontSize="14" />
+                                        <TextBlock Text="Place in front of the camera" />
+                                        <TextBlock Text="Enter" Foreground="{StaticResource TextTertiaryBrush}" FontSize="12" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                                <Grid ColumnSpacing="6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <DropDownButton x:Name="FavoriteButton" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" CornerRadius="0" Padding="10,7">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <FontIcon x:Name="FavoriteGlyph" Glyph="&#xE734;" FontSize="14" />
+                                            <TextBlock x:Name="FavoriteText" Text="Favorite" />
+                                        </StackPanel>
+                                        <DropDownButton.Flyout>
+                                            <MenuFlyout x:Name="FavoriteMenu" Placement="Bottom" Opening="OnFavoriteMenuOpening" />
+                                        </DropDownButton.Flyout>
+                                    </DropDownButton>
+                                    <Button Grid.Column="1" Style="{StaticResource ActionButtonStyle}" Click="OnSameFolder" ToolTipService.ToolTip="Everything in the same game folder: variants, colors, sizes">
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <FontIcon Glyph="&#xE8B7;" FontSize="14" />
+                                            <TextBlock Text="Same folder" />
+                                        </StackPanel>
+                                    </Button>
+                                </Grid>
+                                <ItemsControl x:Name="FolderChips" Margin="0,2,0,0">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="6" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="x:String">
+                                            <Border Background="{StaticResource AccentSoftBrush}" Padding="8,2,8,3">
+                                                <StackPanel Orientation="Horizontal" Spacing="5">
+                                                    <FontIcon Glyph="&#xE735;" FontSize="10" Foreground="{StaticResource AccentBrush}" />
+                                                    <TextBlock Text="{x:Bind}" FontSize="11" />
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                            <TextBlock x:Name="SelectionNote" Style="{StaticResource CaptionStyle}" Margin="16,0" Visibility="Collapsed" />
+                        </StackPanel>
+                    </ScrollViewer>
+                    <StackPanel x:Name="NoSelection" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10" Padding="28">
+                        <FontIcon Glyph="&#xE8F1;" FontSize="34" Foreground="{StaticResource TextTertiaryBrush}" />
+                        <TextBlock Text="Pick something" FontSize="16" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                        <TextBlock Style="{StaticResource CaptionStyle}" TextAlignment="Center"
+                                   Text="Select a card to see it turn in 3D. Double-click or Enter places it in front of the camera; drag it into the world to drop it where you want; drag it onto a favorite folder to keep it." />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Game sounds: every event of the game that plays a recording, to listen to. -->
+            <Grid x:Name="SoundsPage" Grid.Column="1" Grid.ColumnSpan="2" Visibility="Collapsed" Background="{StaticResource ShellBackgroundBrush}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid Padding="16,12,16,8" ColumnSpacing="10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="240" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="SoundSearchBox" Height="34" FontSize="14" VerticalContentAlignment="Center" PlaceholderText="Search the game's sounds: rain, fridge, neon, crowd, door, explosion…" TextChanged="OnSoundSearchChanged" KeyDown="OnSoundSearchKey" />
+                    <ComboBox x:Name="SoundTagBox" Grid.Column="1" Height="32" HorizontalAlignment="Stretch" SelectionChanged="OnSoundTagChanged" ToolTipService.ToolTip="The game's own tags (where the sound belongs)" />
+                    <Button x:Name="SoundStopButton" Grid.Column="2" Height="32" Click="OnSoundStop" IsEnabled="False" ToolTipService.ToolTip="Stop what is playing">
+                        <StackPanel Orientation="Horizontal" Spacing="8"><FontIcon Glyph="&#xE71A;" FontSize="12" /><TextBlock Text="Stop" /></StackPanel>
+                    </Button>
+                </Grid>
+                <Grid Grid.Row="1" Padding="16,0,16,8" ColumnSpacing="12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Game sounds" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <TextBlock x:Name="SoundResultCount" Grid.Column="1" Style="{StaticResource CaptionStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" />
+                </Grid>
+                <ListView x:Name="SoundList" Grid.Row="2" Padding="8,0,8,16" SelectionMode="Single" IsItemClickEnabled="True" ItemClick="OnSoundItemClick" KeyDown="OnSoundListKey">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="local:LibrarySoundItem">
+                            <Grid ColumnSpacing="12" Height="34" Background="Transparent" ToolTipService.ToolTip="{x:Bind Tags}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <FontIcon Glyph="{x:Bind Glyph, Mode=OneWay}" FontSize="13" Foreground="{x:Bind GlyphBrush, Mode=OneWay}" />
+                                <TextBlock Grid.Column="1" Text="{x:Bind Name}" FontFamily="{StaticResource MonoFont}" FontSize="12.5" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Grid.Column="2" Text="{x:Bind Detail}" Style="{StaticResource CaptionStyle}" VerticalAlignment="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+                <StackPanel x:Name="SoundsMessage" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8" Visibility="Collapsed" MaxWidth="460">
+                    <FontIcon Glyph="&#xE8D6;" FontSize="34" Foreground="{StaticResource TextTertiaryBrush}" />
+                    <TextBlock x:Name="SoundsMessageText" Style="{StaticResource CaptionStyle}" TextAlignment="Center" TextWrapping="Wrap" />
+                </StackPanel>
+            </Grid>
+
+            <!-- Visual effects: the game's effects and particle systems, played in a viewer. -->
+            <Grid x:Name="EffectsPage" Grid.Column="1" Grid.ColumnSpan="2" Visibility="Collapsed" Background="{StaticResource ShellBackgroundBrush}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="460" />
+                </Grid.ColumnDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid Padding="16,12,16,8" ColumnSpacing="10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="EffectSearchBox" Height="34" FontSize="14" VerticalContentAlignment="Center" PlaceholderText="Search effects: fire, smoke, steam, sparks, explosion, rain, neon…" TextChanged="OnEffectSearchChanged" KeyDown="OnEffectSearchKey" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <ToggleButton x:Name="EffectKindAll" Style="{StaticResource SegmentStyle}" Content="All" IsChecked="True" Click="OnEffectKind" Tag="All" />
+                            <ToggleButton x:Name="EffectKindEffects" Style="{StaticResource SegmentStyle}" Content="Effects" Click="OnEffectKind" Tag="Effects" ToolTipService.ToolTip="Effects (.effect): particle systems, sounds and lights on a time line" />
+                            <ToggleButton x:Name="EffectKindSystems" Style="{StaticResource SegmentStyle}" Content="Particle systems" Click="OnEffectKind" Tag="Systems" ToolTipService.ToolTip="Particle systems (.particle) by themselves" />
+                        </StackPanel>
+                    </Grid>
+                    <Grid Grid.Row="1" Padding="16,0,16,8" ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Visual effects" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" />
+                        <TextBlock x:Name="EffectResultCount" Grid.Column="1" Style="{StaticResource CaptionStyle}" VerticalAlignment="Center" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis" />
+                    </Grid>
+                    <ListView x:Name="EffectList" Grid.Row="2" Padding="8,0,8,16" SelectionMode="Single" SelectionChanged="OnEffectSelected" DoubleTapped="OnEffectDoubleTapped">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="local:LibraryEffectItem">
+                                <Grid ColumnSpacing="12" Height="34" Background="Transparent" ToolTipService.ToolTip="{x:Bind Path}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <FontIcon Glyph="{x:Bind Glyph}" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" />
+                                    <TextBlock Grid.Column="1" Text="{x:Bind Name}" FontSize="13" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="2" Text="{x:Bind Folder}" Style="{StaticResource CaptionStyle}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <StackPanel x:Name="EffectsMessage" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="8" Visibility="Collapsed" MaxWidth="460">
+                        <FontIcon Glyph="&#xE945;" FontSize="34" Foreground="{StaticResource TextTertiaryBrush}" />
+                        <TextBlock x:Name="EffectsMessageText" Style="{StaticResource CaptionStyle}" TextAlignment="Center" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Grid>
+                <Border Grid.Column="1" Background="{StaticResource SidebarBackgroundBrush}" BorderBrush="{StaticResource HairlineBrush}" BorderThickness="1,0,0,0">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel Spacing="12" Padding="0,0,0,16">
+                            <Grid Height="400" Background="{StaticResource ThumbBackgroundBrush}">
+                                <SwapChainPanel x:Name="EffectPanel" />
+                                <TextBlock x:Name="EffectPanelHint" Text="Choose an effect to play it" Style="{StaticResource CaptionStyle}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="6" Spacing="4">
+                                    <Button Style="{StaticResource IconButtonStyle}" Width="28" Height="28" FontSize="13" Content="&#xE72C;" Click="OnEffectRestart" ToolTipService.ToolTip="Play it again from its start" />
+                                    <ToggleButton x:Name="EffectPauseButton" Style="{StaticResource ToolButtonStyle}" Width="28" Height="28" FontSize="13" Content="&#xE769;" Click="OnEffectPause" ToolTipService.ToolTip="Pause" />
+                                </StackPanel>
+                            </Grid>
+                            <StackPanel Padding="16,0" Spacing="6">
+                                <TextBlock x:Name="EffectName" FontSize="20" FontWeight="SemiBold" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
+                                <TextBlock x:Name="EffectInfo" Style="{StaticResource CaptionStyle}" TextWrapping="Wrap" />
+                                <TextBox x:Name="EffectPath" IsReadOnly="True" FontFamily="{StaticResource MonoFont}" FontSize="11" TextWrapping="Wrap" Visibility="Collapsed" />
+                            </StackPanel>
+                            <StackPanel Padding="16,0" Spacing="6">
+                                <Button x:Name="EffectPlaceButton" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" IsEnabled="False" Click="OnEffectPlace" ToolTipService.ToolTip="Adds it to the project on the surface at the centre of the editor's view">
+                                    <StackPanel Orientation="Horizontal" Spacing="10"><FontIcon Glyph="&#xE7B5;" FontSize="14" /><TextBlock Text="Place in front of the camera" /></StackPanel>
+                                </Button>
+                                <CheckBox x:Name="EffectSoundsBox" Content="Play the sounds of the effect" IsChecked="True" />
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource CaptionStyle}" TextWrapping="Wrap" Margin="16,0" Text="Played from the game's own files: its particle modules are simulated, its fire, smoke and sprite shaders are ports of the game's. Screen effects, trails, beams, heat haze and liquids are not drawn; lighting and exposure are the editor's." />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- Status bar -->
+        <Grid Grid.Row="2" Background="{StaticResource HeaderBackgroundBrush}" BorderBrush="{StaticResource HairlineBrush}" BorderThickness="0,1,0,0" Padding="12,0" ColumnSpacing="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock x:Name="StatusText" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                       Text="Ctrl+F search · Enter place in front · F favorite · drag cards onto a folder or into the world" />
+            <TextBlock x:Name="ThumbnailStatus" Grid.Column="1" FontSize="11" Foreground="{StaticResource TextTertiaryBrush}" VerticalAlignment="Center" />
+        </Grid>
+    </Grid>
+</Window>

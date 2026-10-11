@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Binds an NCWE project (EditorDocument) to the collaboration service: live sessions (edits as
+       project deltas in the server's order, presence, locks, chat, snapshots, reconnection) and
+       cloud saves. No UI: NCWE Studio drives it, the tests run two of them against a server. -->
+  <PropertyGroup>
+    <AssemblyName>NCWE.Collab.Client</AssemblyName>
+    <RootNamespace>NCWE.Collab.Client</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../NCWE.Collab/NCWE.Collab.csproj" />
+    <ProjectReference Include="../NCWE.Core/NCWE.Core.csproj" />
+  </ItemGroup>
+</Project>
